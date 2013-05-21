@@ -1,6 +1,7 @@
 from collections import deque
 from threading import Lock
 
+from scrapy import log
 from scrapy.signals import engine_stopped
 from selenium import webdriver
 from scrapy_webdriver.http import WebdriverRequest, WebdriverActionRequest
@@ -19,6 +20,7 @@ class WebdriverManager(object):
         self._user_agent = crawler.settings.get('USER_AGENT', None)
         self._web_driver_options = crawler.settings.get('WEBDRIVER_OPTIONS',
                                                         dict())
+        self.timeout = crawler.settings.get("WEBDRIVER_TIMEOUT", 0)
         self._webdriver = None
         if isinstance(self._browser, basestring):
             self._browser = getattr(webdriver, self._browser)
@@ -63,6 +65,17 @@ class WebdriverManager(object):
             else:
                 queue = self._wait_queue
             queue.append(request)
+
+    def get(self, url):
+        if self.timeout:
+            self.webdriver.set_page_load_timeout(self.timeout)
+            self.webdriver.set_script_timeout(self.timeout)
+            self.webdriver.implicitly_wait(self.timeout)
+        try:
+            self.webdriver.get(url)
+        except Exception as e:
+            message = "Unable to get url %s because of %s" % (url, e)
+            log.msg(message, level=log.ERROR)
 
     def acquire_next(self):
         """Return the next waiting request, if any.

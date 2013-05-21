@@ -32,7 +32,7 @@ class WebdriverDownloadHandler(object):
     def _download_request(self, request, spider):
         """Download a request URL using webdriver."""
         log.msg('Downloading %s with webdriver' % request.url, level=log.DEBUG)
-        request.manager.webdriver.get(request.url)
+        request.manager.get(request.url)
         return WebdriverResponse(request.url, request.manager.webdriver)
 
     @inthread

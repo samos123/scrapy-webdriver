@@ -48,6 +48,9 @@ Add something like this in your scrapy project settings:
         'service_args': ['--debug=true', '--load-images=false', '--webdriver-loglevel=debug']
     }
 
+    # If not set it will use the webdriver default which seems to be infinit
+    WEBDRIVER_TIMEOUT = 10
+
 Usage
 =====
 
